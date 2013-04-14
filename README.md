@@ -23,9 +23,8 @@ You know what you need for you system, basically your appropriate analog of buil
 ```nodejs
 var pm = require('pm-notify');
 
-pm.on('waking', function() {});
+pm.on('sleep', function() {});
 pm.on('wake', function() {});
-pm.on('sleeping', function() {});
 ```
 
 # Release Notes

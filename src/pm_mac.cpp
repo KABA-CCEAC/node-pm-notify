@@ -56,7 +56,7 @@ void NotifyCallBack(void * refCon, io_service_t service, natural_t messageType, 
             // fprintf(stderr, "kIOMessageSystemWillSleep\n");
 
             pthread_mutex_lock(&notify_mutex);
-	        strcpy(notify_msg, "sleeping");
+	        strcpy(notify_msg, "sleep");
 	        pthread_cond_signal(&notify_cv);
 	        pthread_mutex_unlock(&notify_mutex);
             
@@ -67,10 +67,10 @@ void NotifyCallBack(void * refCon, io_service_t service, natural_t messageType, 
             //System has started the wake up process...
             // fprintf(stderr, "kIOMessageSystemWillPowerOn\n");
 
-            pthread_mutex_lock(&notify_mutex);
-	        strcpy(notify_msg, "waking");
-	        pthread_cond_signal(&notify_cv);
-	        pthread_mutex_unlock(&notify_mutex);
+            // pthread_mutex_lock(&notify_mutex);
+	        // strcpy(notify_msg, "waking");
+	        // pthread_cond_signal(&notify_cv);
+	        // pthread_mutex_unlock(&notify_mutex);
 
             break;
             

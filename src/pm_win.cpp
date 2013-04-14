@@ -48,14 +48,14 @@ static long FAR PASCAL WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		if (wParam == PBT_APMRESUMEAUTOMATIC)
 		{
 			// printf("waking\n");
-            strcpy(notify_msg, "waking");
-            SetEvent(notifyEvent);
+            // strcpy(notify_msg, "waking");
+            // SetEvent(notifyEvent);
 		}
 
 		if (wParam == PBT_APMSUSPEND)
 		{
 			// printf("sleeping\n");
-            strcpy(notify_msg, "sleeping");
+            strcpy(notify_msg, "sleep");
             SetEvent(notifyEvent);
 		}
 
