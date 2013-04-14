@@ -8,11 +8,3 @@ pm.registerNotifications(function(msg) {
 });
 
 module.exports = notify;
-
-notify.on('wake', function() {
-	console.log('wake');
-});
-
-notify.on('sleep', function() {
-	console.log('sleep');
-});
