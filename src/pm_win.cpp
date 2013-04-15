@@ -14,6 +14,8 @@ HANDLE notifyEvent;
 
 char notify_msg[1024];
 
+bool isRunning = false;
+
 DWORD WINAPI ListenerThread( LPVOID lpParam );
 
 void NotifyAsync(uv_work_t* req);
@@ -101,12 +103,10 @@ DWORD WINAPI ListenerThread( LPVOID lpParam )
     }
 
     return 0;
-} 
+}
 
-void InitPM()
+void Start()
 {
-    notifyEvent = CreateEvent(NULL, false /* auto-reset event */, false /* non-signalled state */, "");
-
     threadHandle = CreateThread( 
         NULL,                   // default security attributes
         0,                      // use default stack size  
@@ -117,4 +117,17 @@ void InitPM()
 
     uv_work_t* req = new uv_work_t();
     uv_queue_work(uv_default_loop(), req, NotifyAsync, (uv_after_work_cb)NotifyFinished);
+}
+
+void Stop()
+{
+    isRunning = false;
+    SetEvent(notifyEvent);
+
+    // ExitThread(threadHandle);
+}
+
+void InitPM()
+{
+    notifyEvent = CreateEvent(NULL, false /* auto-reset event */, false /* non-signalled state */, "");
 }

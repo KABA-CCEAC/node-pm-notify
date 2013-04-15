@@ -10,6 +10,11 @@
 
 void InitPM();
 
+v8::Handle<v8::Value> StartMonitoring(const v8::Arguments& args);
+void Start();
+v8::Handle<v8::Value> StopMonitoring(const v8::Arguments& args);
+void Stop();
+
 v8::Handle<v8::Value> RegisterNotifications(const v8::Arguments& args);
 void Notify(char* msg);
 

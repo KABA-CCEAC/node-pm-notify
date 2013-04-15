@@ -7,4 +7,7 @@ pm.registerNotifications(function(msg) {
 	notify.emit(msg);
 });
 
+notify.startMonitoring = pm.startMonitoring;
+notify.stopMonitoring = pm.stopMonitoring;
+
 module.exports = notify;

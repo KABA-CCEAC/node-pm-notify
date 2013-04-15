@@ -17,6 +17,7 @@ pthread_t lookupThread;
 pthread_mutex_t notify_mutex;
 pthread_cond_t notify_cv;
 char notify_msg[1024];
+bool isRunning = false;
 
 void NotifyCallBack(void * refCon, io_service_t service, natural_t messageType, void * messageArgument )
 {
@@ -104,11 +105,17 @@ void NotifyFinished(uv_work_t* req)
 {
     pthread_mutex_lock(&notify_mutex);
 
-    Notify(notify_msg);
+    if (isRunning)
+    {
+        Notify(notify_msg);
+    }
 
     pthread_mutex_unlock(&notify_mutex);
 
-    uv_queue_work(uv_default_loop(), req, NotifyAsync, (uv_after_work_cb)NotifyFinished);
+    if (isRunning)
+    {
+        uv_queue_work(uv_default_loop(), req, NotifyAsync, (uv_after_work_cb)NotifyFinished);
+    }
 }
 
 void *RunLoop(void * arg)
@@ -131,6 +138,30 @@ void *RunLoop(void * arg)
     return NULL;
 }
 
+void Start()
+{
+    isRunning = true;
+    int rc = pthread_create(&lookupThread, NULL, RunLoop, NULL);
+    if (rc)
+    {
+        fprintf(stderr, "ERROR; return code from pthread_create() is %d\n", rc);
+        exit(-1);
+    }
+    
+    uv_work_t* req = new uv_work_t();
+    uv_queue_work(uv_default_loop(), req, NotifyAsync, (uv_after_work_cb)NotifyFinished);
+}
+
+void Stop()
+{
+    isRunning = false;
+    pthread_mutex_lock(&notify_mutex);
+    pthread_cond_signal(&notify_cv);
+    pthread_mutex_unlock(&notify_mutex);
+
+    // pthread_exit(&lookupThread);
+}
+
 void InitPM()
 {   
     // notifier object, used to deregister later
@@ -149,13 +180,5 @@ void InitPM()
     pthread_mutex_init(&notify_mutex, NULL);
     pthread_cond_init(&notify_cv, NULL);
 
-    int rc = pthread_create(&lookupThread, NULL, RunLoop, NULL);
-    if (rc)
-    {
-         fprintf(stderr, "ERROR; return code from pthread_create() is %d\n", rc);
-         exit(-1);
-    }
-
-    uv_work_t* req = new uv_work_t();
-    uv_queue_work(uv_default_loop(), req, NotifyAsync, (uv_after_work_cb)NotifyFinished);
+    Start();
 }
