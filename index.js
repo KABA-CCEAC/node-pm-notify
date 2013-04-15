@@ -3,6 +3,8 @@ var pm = require('bindings')('pm.node'),
 
 var notify = new EventEmitter();
 
+notify.setMaxListeners(1000);
+
 pm.registerNotifications(function(msg) {
 	notify.emit(msg);
 });
