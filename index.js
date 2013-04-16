@@ -12,4 +12,6 @@ pm.registerNotifications(function(msg) {
 notify.startMonitoring = pm.startMonitoring;
 notify.stopMonitoring = pm.stopMonitoring;
 
+global['pm-notify'] = notify;
+
 module.exports = notify;
