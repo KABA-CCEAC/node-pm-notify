@@ -133,4 +133,5 @@ void Stop()
 void InitPM()
 {
     notifyEvent = CreateEvent(NULL, false /* auto-reset event */, false /* non-signalled state */, "");
+    Start();
 }
