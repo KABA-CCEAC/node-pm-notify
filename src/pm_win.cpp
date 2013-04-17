@@ -79,7 +79,7 @@ static long FAR PASCAL WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 DWORD WINAPI ListenerThread( LPVOID lpParam ) 
 {
 
-    const char *className = "ListnerThread";
+    const char *className = "ListnerThreadPmNotify";
     
     WNDCLASS wc = {0};
 
