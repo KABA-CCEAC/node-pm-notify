@@ -5,6 +5,7 @@
 #include <strsafe.h>
 
 #include "pm.h"
+#include "constants.h"
 
 HWND handle;
 DWORD threadId;
@@ -12,7 +13,7 @@ HANDLE threadHandle;
 
 HANDLE notifyEvent;
 
-char notify_msg[1024];
+char *notify_msg;
 
 bool isRunning = false;
 
@@ -45,7 +46,7 @@ static long FAR PASCAL WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		if (wParam == PBT_APMRESUMESUSPEND)
 		{
 			// printf("wake\n");
-            strcpy(notify_msg, "wake");
+            notify_msg = (char *)WAKE_NOTIFY;
             SetEvent(notifyEvent);
 		}
 
@@ -59,7 +60,7 @@ static long FAR PASCAL WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		if (wParam == PBT_APMSUSPEND)
 		{
 			// printf("sleeping\n");
-            strcpy(notify_msg, "sleep");
+            notify_msg = (char *)SLEEP_NOTIFY;
             SetEvent(notifyEvent);
 		}
 
