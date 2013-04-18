@@ -7,6 +7,9 @@
 #include "pm.h"
 #include "constants.h"
 
+
+#define MAX_THREAD_WINDOW_NAME 64
+
 HWND handle;
 DWORD threadId;
 HANDLE threadHandle;
@@ -46,6 +49,7 @@ static long FAR PASCAL WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		if (wParam == PBT_APMRESUMESUSPEND)
 		{
 			// printf("wake\n");
+
             notify_msg = (char *)WAKE_NOTIFY;
             SetEvent(notifyEvent);
 		}
@@ -60,6 +64,7 @@ static long FAR PASCAL WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		if (wParam == PBT_APMSUSPEND)
 		{
 			// printf("sleeping\n");
+
             notify_msg = (char *)SLEEP_NOTIFY;
             SetEvent(notifyEvent);
 		}
@@ -79,9 +84,9 @@ static long FAR PASCAL WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 
 DWORD WINAPI ListenerThread( LPVOID lpParam ) 
 {
+    char className[MAX_THREAD_WINDOW_NAME];
+    _snprintf(className, MAX_THREAD_WINDOW_NAME, "ListnerThreadPmNotify_%d", GetCurrentThreadId());
 
-    const char *className = "ListnerThreadPmNotify";
-    
     WNDCLASS wc = {0};
 
     // Set up and register window class
