@@ -1,17 +1,24 @@
-var pm = require('bindings')('pm.node'),
-	EventEmitter = require('events').EventEmitter;
+var index = require('./package.json');
 
-var notify = new EventEmitter();
+if (global[index.name] && global[index.name].version === index.version) {
+	module.exports = global[index.name];
+} else {
+	var pm = require('bindings')('pm.node'),
+		EventEmitter = require('events').EventEmitter;
 
-notify.setMaxListeners(1000);
+	var notify = new EventEmitter();
 
-pm.registerNotifications(function(msg) {
-	notify.emit(msg);
-});
+	notify.setMaxListeners(1000);
 
-notify.startMonitoring = pm.startMonitoring;
-notify.stopMonitoring = pm.stopMonitoring;
+	pm.registerNotifications(function(msg) {
+		notify.emit(msg);
+	});
 
-global['pm-notify'] = notify;
+	notify.startMonitoring = pm.startMonitoring;
+	notify.stopMonitoring = pm.stopMonitoring;
 
-module.exports = notify;
+	notify.version = index.version;
+	global[index.name] = notify;
+
+	module.exports = notify;
+}
