@@ -1,5 +1,3 @@
-#include "pm.h"
-
 #include <mach/mach_port.h>
 #include <mach/mach_interface.h>
 #include <mach/mach_init.h>
@@ -11,12 +9,15 @@
 
 #include <uv.h>
 
+#include "pm.h"
+#include "constants.h"
+
 io_connect_t  root_port; // a reference to the Root Power Domain IOService
 IONotificationPortRef  notifyPortRef; // notification port allocated by IORegisterForSystemPower
 pthread_t lookupThread;
 pthread_mutex_t notify_mutex;
 pthread_cond_t notify_cv;
-char notify_msg[1024];
+char *notify_msg;
 bool isRunning = false;
 
 void NotifyCallBack(void * refCon, io_service_t service, natural_t messageType, void * messageArgument )
@@ -57,7 +58,7 @@ void NotifyCallBack(void * refCon, io_service_t service, natural_t messageType, 
             // fprintf(stderr, "kIOMessageSystemWillSleep\n");
 
             pthread_mutex_lock(&notify_mutex);
-	        strcpy(notify_msg, "sleep");
+	        notify_msg = (char*) SLEEP_NOTIFY;
 	        pthread_cond_signal(&notify_cv);
 	        pthread_mutex_unlock(&notify_mutex);
             
@@ -80,7 +81,7 @@ void NotifyCallBack(void * refCon, io_service_t service, natural_t messageType, 
             // fprintf(stderr, "kIOMessageSystemHasPoweredOn\n");
 
             pthread_mutex_lock(&notify_mutex);
-            strcpy(notify_msg, "wake");
+            notify_msg = (char*) WAKE_NOTIFY;
 	        pthread_cond_signal(&notify_cv);
 	        pthread_mutex_unlock(&notify_mutex);
 

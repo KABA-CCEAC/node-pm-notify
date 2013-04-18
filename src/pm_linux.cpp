@@ -7,6 +7,7 @@
 #include <pthread.h> 
 
 #include "pm.h"
+#include "constants.h"
 
 
 /**********************************
@@ -15,9 +16,6 @@
 #define RESUME_SIGNAL   "Resuming"
 #define SLEEP_SIGNAL   	"Sleeping"
 #define POWER_INTERFACE "org.freedesktop.UPower"
-
-#define WAKE_NOTIFY		"wake"
-#define SLEEP_NOTIFY	"sleep"
 
 #define RULE  ("type='signal',interface='"POWER_INTERFACE"'")
  
@@ -82,16 +80,14 @@ DBusHandlerResult signal_filter(DBusConnection *connection, DBusMessage *msg, vo
 	{
 	    if (dbus_message_is_signal(msg, POWER_INTERFACE, RESUME_SIGNAL)) 
 	    {
-	    	notify_msg = new char[strlen(WAKE_NOTIFY) + 1];
-	    	memcpy(notify_msg, WAKE_NOTIFY, strlen(WAKE_NOTIFY) + 1);
+	    	notify_msg = (char *) WAKE_NOTIFY;
 		    pthread_mutex_lock(&notify_mutex);
 		    pthread_cond_signal(&notify_cv);
 		    pthread_mutex_unlock(&notify_mutex);
 	    }
 	    else if (dbus_message_is_signal(msg, POWER_INTERFACE, SLEEP_SIGNAL)) 
 	    {
-	    	notify_msg = new char[strlen(SLEEP_NOTIFY) + 1];
-	    	memcpy(notify_msg, SLEEP_NOTIFY, strlen(SLEEP_NOTIFY) + 1);
+	    	notify_msg = (char *) SLEEP_NOTIFY;
 		    pthread_mutex_lock(&notify_mutex);
 		    pthread_cond_signal(&notify_cv);
 		    pthread_mutex_unlock(&notify_mutex);
