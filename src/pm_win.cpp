@@ -37,8 +37,9 @@ void NotifyFinished(uv_work_t* req)
     if (isRunning)
     {
         Notify(notify_msg);
-        uv_queue_work(uv_default_loop(), req, NotifyAsync, (uv_after_work_cb)NotifyFinished);
     }
+
+    uv_queue_work(uv_default_loop(), req, NotifyAsync, (uv_after_work_cb)NotifyFinished);
 }
 
 static long FAR PASCAL WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -116,6 +117,17 @@ DWORD WINAPI ListenerThread( LPVOID lpParam )
 void Start()
 {
     isRunning = true;
+}
+
+void Stop()
+{
+    isRunning = false;
+}
+
+void InitPM()
+{
+    notifyEvent = CreateEvent(NULL, false /* auto-reset event */, false /* non-signalled state */, "");
+    
     threadHandle = CreateThread( 
         NULL,                   // default security attributes
         0,                      // use default stack size  
@@ -126,18 +138,6 @@ void Start()
 
     uv_work_t* req = new uv_work_t();
     uv_queue_work(uv_default_loop(), req, NotifyAsync, (uv_after_work_cb)NotifyFinished);
-}
 
-void Stop()
-{
-    isRunning = false;
-    SetEvent(notifyEvent);
-
-    // ExitThread(threadHandle);
-}
-
-void InitPM()
-{
-    notifyEvent = CreateEvent(NULL, false /* auto-reset event */, false /* non-signalled state */, "");
     Start();
 }

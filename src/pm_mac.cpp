@@ -96,27 +96,20 @@ void NotifyCallBack(void * refCon, io_service_t service, natural_t messageType, 
 void NotifyAsync(uv_work_t* req)
 {
     pthread_mutex_lock(&notify_mutex);
-
     pthread_cond_wait(&notify_cv, &notify_mutex);
-
     pthread_mutex_unlock(&notify_mutex);
 }
 
 void NotifyFinished(uv_work_t* req)
 {
     pthread_mutex_lock(&notify_mutex);
-
     if (isRunning)
     {
         Notify(notify_msg);
     }
-
     pthread_mutex_unlock(&notify_mutex);
 
-    if (isRunning)
-    {
-        uv_queue_work(uv_default_loop(), req, NotifyAsync, (uv_after_work_cb)NotifyFinished);
-    }
+    uv_queue_work(uv_default_loop(), req, NotifyAsync, (uv_after_work_cb)NotifyFinished);
 }
 
 void *RunLoop(void * arg)
@@ -142,25 +135,11 @@ void *RunLoop(void * arg)
 void Start()
 {
     isRunning = true;
-    int rc = pthread_create(&lookupThread, NULL, RunLoop, NULL);
-    if (rc)
-    {
-        fprintf(stderr, "ERROR; return code from pthread_create() is %d\n", rc);
-        exit(-1);
-    }
-    
-    uv_work_t* req = new uv_work_t();
-    uv_queue_work(uv_default_loop(), req, NotifyAsync, (uv_after_work_cb)NotifyFinished);
 }
 
 void Stop()
 {
     isRunning = false;
-    pthread_mutex_lock(&notify_mutex);
-    pthread_cond_signal(&notify_cv);
-    pthread_mutex_unlock(&notify_mutex);
-
-    // pthread_exit(&lookupThread);
 }
 
 void InitPM()
@@ -180,6 +159,16 @@ void InitPM()
     
     pthread_mutex_init(&notify_mutex, NULL);
     pthread_cond_init(&notify_cv, NULL);
+
+    int rc = pthread_create(&lookupThread, NULL, RunLoop, NULL);
+    if (rc)
+    {
+        fprintf(stderr, "ERROR; return code from pthread_create() is %d\n", rc);
+        exit(-1);
+    }
+    
+    uv_work_t* req = new uv_work_t();
+    uv_queue_work(uv_default_loop(), req, NotifyAsync, (uv_after_work_cb)NotifyFinished);
 
     Start();
 }
