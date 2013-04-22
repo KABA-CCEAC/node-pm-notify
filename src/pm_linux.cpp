@@ -105,7 +105,6 @@ void NotifyAsync(uv_work_t* req)
 
 void NotifyFinished(uv_work_t* req)
 {
-	printf("Notify: %s\n", notify_msg);
     Notify(notify_msg);
     uv_queue_work(uv_default_loop(), req, NotifyAsync, (uv_after_work_cb)NotifyFinished);
 }
@@ -143,7 +142,7 @@ void InitDbus()
 void* ThreadFunc(void* ptr)
 {
     InitDbus();
-	
+
     GMainLoop *loop = g_main_loop_new(NULL, FALSE);
  
     g_main_loop_run(loop);
