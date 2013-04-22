@@ -54,11 +54,9 @@ void InitPM()
     uv_work_t* req = new uv_work_t();
     uv_queue_work(uv_default_loop(), req, NotifyAsync, (uv_after_work_cb)NotifyFinished);
 
-    InitDbus();
-
-    isActive = true;
-
     pthread_create(&thread, NULL, ThreadFunc, NULL);
+
+    Start();
 }
 
 void Stop()
@@ -107,8 +105,8 @@ void NotifyAsync(uv_work_t* req)
 
 void NotifyFinished(uv_work_t* req)
 {
+	printf("Notify: %s\n", notify_msg);
     Notify(notify_msg);
-    delete notify_msg;
     uv_queue_work(uv_default_loop(), req, NotifyAsync, (uv_after_work_cb)NotifyFinished);
 }
 
@@ -144,6 +142,8 @@ void InitDbus()
 
 void* ThreadFunc(void* ptr)
 {
+    InitDbus();
+	
     GMainLoop *loop = g_main_loop_new(NULL, FALSE);
  
     g_main_loop_run(loop);

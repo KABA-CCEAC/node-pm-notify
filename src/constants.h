@@ -1,2 +1,2 @@
-const char * WAKE_NOTIFY = "wakeup";
+const char * WAKE_NOTIFY = "wake";
 const char * SLEEP_NOTIFY = "sleep";
