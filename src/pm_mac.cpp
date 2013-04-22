@@ -168,7 +168,7 @@ void InitPM()
     // notifier object, used to deregister later
     io_object_t            notifierObject;
     // this parameter is passed to the callback
-    void*                  refCon;
+    void*                  refCon = NULL;
     
     // register to receive system sleep notifications
     
