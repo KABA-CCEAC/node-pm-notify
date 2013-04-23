@@ -42,7 +42,7 @@ void NotifyFinished(uv_work_t* req)
     uv_queue_work(uv_default_loop(), req, NotifyAsync, (uv_after_work_cb)NotifyFinished);
 }
 
-static long FAR PASCAL WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+static LRESULT FAR PASCAL WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     if(message == WM_POWERBROADCAST)
     {
@@ -86,7 +86,7 @@ static long FAR PASCAL WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 DWORD WINAPI ListenerThread( LPVOID lpParam ) 
 {
     char className[MAX_THREAD_WINDOW_NAME];
-    _snprintf(className, MAX_THREAD_WINDOW_NAME, "ListnerThreadPmNotify_%d", GetCurrentThreadId());
+    _snprintf_s(className, MAX_THREAD_WINDOW_NAME, "ListnerThreadPmNotify_%d", GetCurrentThreadId());
 
     WNDCLASS wc = {0};
 
