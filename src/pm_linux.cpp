@@ -62,6 +62,9 @@ void InitPM()
 void Stop()
 {
 	isActive = false;
+    pthread_mutex_lock(&notify_mutex);
+    pthread_cond_signal(&notify_cv);
+    pthread_mutex_unlock(&notify_mutex);
 }
 
 void Start()

@@ -122,6 +122,7 @@ void Start()
 void Stop()
 {
     isRunning = false;
+    SetEvent(notifyEvent);
 }
 
 void InitPM()
