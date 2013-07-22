@@ -1,16 +1,24 @@
 #include "pm.h"
 
-v8::Persistent<v8::Value> notificationCallback;
+NanCallback* notificationCallback;
 bool isNotificationRegistered = false;
 
-v8::Handle<v8::Value> RegisterNotifications(const v8::Arguments& args) {
-  v8::HandleScope scope;
+void Notify(char* msg) {
+  if (isNotificationRegistered) {
+    v8::Local<v8::Value> argv[1];
+    argv[0] = v8::String::New(msg);
+    notificationCallback->Call(1, argv);
+  }
+}
 
-  v8::Local<v8::Value> callback;
+NAN_METHOD(RegisterNotifications) {
+  NanScope();
 
-  if (args.Length() == 0) 
+  NanCallback* callback = NULL;
+
+  if (args.Length() == 0)
   {
-    return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("First argument must be a function"))));
+    return NanThrowError("First argument must be a function");
   }
 
   if (args.Length() == 1) 
@@ -18,40 +26,32 @@ v8::Handle<v8::Value> RegisterNotifications(const v8::Arguments& args) {
     // callback
     if(!args[0]->IsFunction()) 
     {
-        return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("First argument must be a function"))));
+      return NanThrowError("First argument must be a function");
     }
 
-    callback = args[0];
+    callback = new NanCallback(v8::Local<v8::Function>::Cast(args[0]));
   }
 
-  notificationCallback = v8::Persistent<v8::Value>::New(callback);
+  notificationCallback = callback;
   isNotificationRegistered = true;
 
-  return scope.Close(v8::Undefined());
+  NanReturnUndefined();
 }
 
-void Notify(char* msg) {
-  if (isNotificationRegistered) {
-    v8::Handle<v8::Value> argv[1];
-    argv[0] = v8::String::New(msg);
-    v8::Function::Cast(*notificationCallback)->Call(v8::Context::GetCurrent()->Global(), 1, argv);
-  }
-}
-
-v8::Handle<v8::Value> StartMonitoring(const v8::Arguments& args) {
-  v8::HandleScope scope;
+NAN_METHOD(StartMonitoring) {
+  NanScope();
 
   Start();
 
-  return scope.Close(v8::Undefined());
+  NanReturnUndefined();
 }
 
-v8::Handle<v8::Value> StopMonitoring(const v8::Arguments& args) {
-  v8::HandleScope scope;
+NAN_METHOD(StopMonitoring) {
+  NanScope();
 
   Stop();
 
-  return scope.Close(v8::Undefined());
+  NanReturnUndefined();
 }
 
 extern "C" {
