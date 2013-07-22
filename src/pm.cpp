@@ -57,7 +57,6 @@ NAN_METHOD(StopMonitoring) {
 extern "C" {
   void init (v8::Handle<v8::Object> target) 
   {
-    v8::HandleScope scope;
     NODE_SET_METHOD(target, "registerNotifications", RegisterNotifications);
     NODE_SET_METHOD(target, "startMonitoring", StartMonitoring);
     NODE_SET_METHOD(target, "stopMonitoring", StopMonitoring);
