@@ -29,10 +29,6 @@ pm.on('wake', function() {});
 
 # Release Notes
 
-## v1.0.1
-
-- ready for node >= 0.11.4
-
 ## v1.0.0
 
 - first release
