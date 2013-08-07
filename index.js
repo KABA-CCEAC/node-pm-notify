@@ -4,7 +4,7 @@ if (global[index.name] && global[index.name].version === index.version) {
 	module.exports = global[index.name];
 } else {
 	var pm = require('bindings')('pm.node'),
-		EventEmitter = require('events').EventEmitter;
+			EventEmitter = require('events').EventEmitter;
 
 	var notify = new EventEmitter();
 
