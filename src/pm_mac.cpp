@@ -102,14 +102,13 @@ void NotifyAsync(uv_work_t* req)
 
 void NotifyFinished(uv_work_t* req)
 {
-    pthread_mutex_lock(&notify_mutex);
     if (isRunning)
     {
+        pthread_mutex_lock(&notify_mutex);
         Notify(notify_msg);
+        pthread_mutex_unlock(&notify_mutex);
+        uv_queue_work(uv_default_loop(), req, NotifyAsync, (uv_after_work_cb)NotifyFinished);
     }
-    pthread_mutex_unlock(&notify_mutex);
-
-    uv_queue_work(uv_default_loop(), req, NotifyAsync, (uv_after_work_cb)NotifyFinished);
 }
 
 void *RunLoop(void * arg)
