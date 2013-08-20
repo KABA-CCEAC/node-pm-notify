@@ -29,7 +29,7 @@ char *notify_msg;
 pthread_t thread;
 pthread_mutex_t notify_mutex;
 pthread_cond_t notify_cv;
-bool isActive;
+bool isActive = false;
 
 DBusConnection *conn;
 
@@ -81,16 +81,16 @@ DBusHandlerResult signal_filter(DBusConnection *connection, DBusMessage *msg, vo
 	{
 	    if (dbus_message_is_signal(msg, POWER_INTERFACE, RESUME_SIGNAL)) 
 	    {
-	    	notify_msg = (char *) WAKE_NOTIFY;
-		    pthread_mutex_lock(&notify_mutex);
-		    pthread_cond_signal(&notify_cv);
+	    	pthread_mutex_lock(&notify_mutex);
+		    notify_msg = (char *) WAKE_NOTIFY;
+            pthread_cond_signal(&notify_cv);
 		    pthread_mutex_unlock(&notify_mutex);
 	    }
 	    else if (dbus_message_is_signal(msg, POWER_INTERFACE, SLEEP_SIGNAL)) 
 	    {
-	    	notify_msg = (char *) SLEEP_NOTIFY;
-		    pthread_mutex_lock(&notify_mutex);
-		    pthread_cond_signal(&notify_cv);
+	    	pthread_mutex_lock(&notify_mutex);
+		    notify_msg = (char *) SLEEP_NOTIFY;
+            pthread_cond_signal(&notify_cv);
 		    pthread_mutex_unlock(&notify_mutex);
 	    }
 	}
@@ -108,8 +108,13 @@ void NotifyAsync(uv_work_t* req)
 
 void NotifyFinished(uv_work_t* req)
 {
-    Notify(notify_msg);
-    uv_queue_work(uv_default_loop(), req, NotifyAsync, (uv_after_work_cb)NotifyFinished);
+    if (isActive) 
+    {
+        pthread_mutex_lock(&notify_mutex);
+        Notify(notify_msg);
+        pthread_mutex_unlock(&notify_mutex);
+        uv_queue_work(uv_default_loop(), req, NotifyAsync, (uv_after_work_cb)NotifyFinished);
+    }
 }
 
 void InitDbus()
