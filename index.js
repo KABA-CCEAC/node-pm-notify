@@ -14,8 +14,21 @@ if (global[index.name] && global[index.name].version === index.version) {
 		notify.emit(msg);
 	});
 
-	notify.startMonitoring = pm.startMonitoring;
-	notify.stopMonitoring = pm.stopMonitoring;
+	var started = true;
+
+	notify.startMonitoring = function() {
+		if (started) return;
+
+		started = true;
+		pm.startMonitoring();
+	};
+
+	notify.stopMonitoring = function() {
+		if (!started) return;
+
+		started = false;
+		pm.stopMonitoring();
+	};
 
 	notify.version = index.version;
 	global[index.name] = notify;
